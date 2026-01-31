@@ -5,46 +5,55 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserService {
 
-    // FIX 1: Remove hardcoded credentials.
-    // Ideally, inject a DataSource, but for standalone JDBC, read from env variables.
+    // 1. Initialize a Logger (Java Util Logging is built-in)
+    private static final Logger LOGGER = Logger.getLogger(UserService.class.getName());
+    
     private static final String DB_URL = "jdbc:mysql://localhost/db";
 
+    // 2. Removed 'throws Exception' from signature
+    // Exceptions are now handled inside the method via try-catch.
     public void findUser(String username) {
-        String query = "SELECT * FROM users WHERE name = ?";
+        
+        // 3. FIX: specific columns instead of SELECT *
+        String query = "SELECT id, name, email FROM users WHERE name = ?";
 
-        // FIX 4: Use try-with-resources to ensure connections close (prevents memory leaks)
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
-            // FIX 2: Prevent SQL Injection using parameters
             ps.setString(1, username);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    // Process result set here
-                    System.out.println("User found: " + rs.getString("name"));
+                    // 4. FIX: Use Logger instead of System.out
+                    String foundName = rs.getString("name");
+                    LOGGER.log(Level.INFO, "User found: {0}", foundName);
                 }
             }
         } catch (SQLException e) {
-            // Handle exception properly (log it usually)
-            e.printStackTrace();
+            // Log the exception stack trace properly
+            LOGGER.log(Level.SEVERE, "Database error occurred while finding user", e);
         }
     }
 
-    // Helper method to retrieve credentials securely
     private Connection getConnection() throws SQLException {
         String dbUser = System.getenv("DB_USER");
         String dbPassword = System.getenv("DB_PASSWORD");
-        
+
         if (dbUser == null || dbPassword == null) {
-            throw new IllegalStateException("Database credentials not set in environment.");
+            // It is okay to throw specific RuntimeExceptions for configuration errors
+            throw new IllegalStateException("DB credentials missing in environment variables.");
         }
-        
         return DriverManager.getConnection(DB_URL, dbUser, dbPassword);
     }
-
-    // FIX 3: 'notUsed' method removed completely.
+    
+    // Example Main method (Clean, no throws)
+    public static void main(String[] args) {
+        UserService service = new UserService();
+        service.findUser("Alice");
+    }
 }
