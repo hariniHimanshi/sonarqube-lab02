@@ -2,31 +2,28 @@ package main.java.com.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 public class UserService {
 
-    // SECURITY ISSUE: Hardcoded credentials
-    private String password = "admin123";
+    // You must define the password variable or pass it in
+    private String password = "your_password_here"; 
 
-    // VULNERABILITY: SQL Injection
     public void findUser(String username) throws Exception {
 
-        Connection conn =
-            DriverManager.getConnection("jdbc:mysql://localhost/db",
-                    "root", password);
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password);
 
-        Statement st = conn.createStatement();
+        // FIX: Use a placeholder (?) instead of concatenating the string
+        String query = "SELECT * FROM users WHERE name = ?";
 
-        String query =
-            "SELECT * FROM users WHERE name = '" + username + "'";
+        // FIX: Use PreparedStatement to safely inject the username
+        PreparedStatement pstmt = conn.prepareStatement(query);
+        pstmt.setString(1, username);
 
-        st.executeQuery(query);
+        pstmt.executeQuery();
+        
+        // Good practice: close connections
+        pstmt.close();
+        conn.close();
     }
-
-    // SMELL: Unused method
-    public void notUsed() {
-        System.out.println("I am never called");
-    }
-    
 }
