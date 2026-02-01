@@ -4,34 +4,46 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
     @Test
-    void testFindUser() throws Exception {
-        // 1. Create Mocks
+    void testFindUserSuccess() throws Exception {
+        // Happy Path: Database works
         Connection mockConn = mock(Connection.class);
         PreparedStatement mockPs = mock(PreparedStatement.class);
         ResultSet mockRs = mock(ResultSet.class);
 
-        // 2. Define behavior
         when(mockConn.prepareStatement(anyString())).thenReturn(mockPs);
         when(mockPs.executeQuery()).thenReturn(mockRs);
-
-        // ✅ FIX: Return true first (found user), then false (stop loop)
-        when(mockRs.next()).thenReturn(true).thenReturn(false);
-        
+        when(mockRs.next()).thenReturn(true).thenReturn(false); // Loop once
         when(mockRs.getString("name")).thenReturn("TestUser");
 
-        // 3. Spy on UserService
         UserService service = spy(new UserService());
         doReturn(mockConn).when(service).getConnection();
 
-        // 4. Run the method
         service.findUser("TestUser");
 
-        // 5. Verify
         verify(mockPs).setString(1, "TestUser");
+    }
+
+    @Test
+    void testFindUserDatabaseError() throws Exception {
+        // Error Path: Simulate a DB failure to cover the 'catch' block
+        Connection mockConn = mock(Connection.class);
+        
+        // Force the code to throw an error when preparing statement
+        when(mockConn.prepareStatement(anyString())).thenThrow(new SQLException("Connection Failed"));
+
+        UserService service = spy(new UserService());
+        doReturn(mockConn).when(service).getConnection();
+
+        // This method should catch the exception internally and NOT crash
+        service.findUser("TestUser");
+
+        // Verify we tried to access DB, even though it failed
+        verify(mockConn).prepareStatement(anyString());
     }
 }

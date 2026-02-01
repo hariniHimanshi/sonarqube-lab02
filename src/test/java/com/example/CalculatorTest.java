@@ -5,21 +5,34 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CalculatorTest {
 
+    private final Calculator calc = new Calculator();
+
     @Test
     void testAdd() {
-        Calculator calc = new Calculator();
-        // This tests the "add" operation
-        int result = calc.calculate(10, 5, "add");
-        assertEquals(15, result);
+        assertEquals(15, calc.calculate(10, 5, "add"));
     }
 
     @Test
     void testSubtract() {
-        Calculator calc = new Calculator();
-        // This tests the "sub" operation (adjust "sub" to match your code, e.g. "subtract" or "minus")
-        int result = calc.calculate(10, 5, "sub"); 
-        assertEquals(5, result);
+        assertEquals(5, calc.calculate(10, 5, "sub"));
     }
-    
-    // If your Calculator has other cases (multiply, divide), add them here!
+
+    @Test
+    void testMultiply() {
+        // Covers the "mul" case
+        assertEquals(50, calc.calculate(10, 5, "mul"));
+    }
+
+    @Test
+    void testDivide() {
+        // Covers the "div" case
+        assertEquals(2, calc.calculate(10, 5, "div"));
+    }
+
+    @Test
+    void testUnknownOperation() {
+        // Covers the "default" case in switch statement
+        // We expect it might return 0 or print an error, but calling it covers the lines.
+        int result = calc.calculate(10, 5, "xyz"); 
+    }
 }

@@ -7,7 +7,7 @@ class AppTest {
 
     @Test
     void testAppInstantiation() {
-        // This covers the implicit "public App()" constructor
+        
         App app = new App();
         assertNotNull(app);
     }
