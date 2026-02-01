@@ -19,20 +19,35 @@ class CalculatorTest {
 
     @Test
     void testMultiply() {
-        // Covers the "mul" case
         assertEquals(50, calc.calculate(10, 5, "mul"));
     }
 
     @Test
     void testDivide() {
-        // Covers the "div" case
         assertEquals(2, calc.calculate(10, 5, "div"));
     }
 
     @Test
+    void testDivideByZero() {
+        // Covers the "if (b == 0) return 0;" line
+        assertEquals(0, calc.calculate(10, 0, "div"));
+    }
+
+    @Test
+    void testModulo() {
+        // Covers the "mod" case
+        assertEquals(1, calc.calculate(10, 3, "mod"));
+    }
+
+    @Test
+    void testPower() {
+        // Covers the "pow" case
+        assertEquals(8, calc.calculate(2, 3, "pow"));
+    }
+
+    @Test
     void testUnknownOperation() {
-        // Covers the "default" case in switch statement
-        // We expect it might return 0 or print an error, but calling it covers the lines.
-        int result = calc.calculate(10, 5, "xyz"); 
+        // Covers the final "else return 0;"
+        assertEquals(0, calc.calculate(10, 5, "unknown"));
     }
 }

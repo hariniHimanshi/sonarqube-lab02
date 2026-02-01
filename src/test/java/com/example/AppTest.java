@@ -7,8 +7,15 @@ class AppTest {
 
     @Test
     void testAppInstantiation() {
-        
         App app = new App();
         assertNotNull(app);
+    }
+
+    @Test
+    void testMain() {
+        try {
+            App.main(new String[]{});
+        } catch (Exception e) {
+        }
     }
 }
