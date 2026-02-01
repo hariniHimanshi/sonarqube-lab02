@@ -29,25 +29,21 @@ class CalculatorTest {
 
     @Test
     void testDivideByZero() {
-        // Covers the "if (b == 0) return 0;" line
         assertEquals(0, calc.calculate(10, 0, "div"));
     }
 
     @Test
     void testModulo() {
-        // Covers the "mod" case
         assertEquals(1, calc.calculate(10, 3, "mod"));
     }
 
     @Test
     void testPower() {
-        // Covers the "pow" case
         assertEquals(8, calc.calculate(2, 3, "pow"));
     }
 
     @Test
     void testUnknownOperation() {
-        // Covers the final "else return 0;"
         assertEquals(0, calc.calculate(10, 5, "unknown"));
     }
 }
